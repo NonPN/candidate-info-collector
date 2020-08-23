@@ -5,8 +5,13 @@ const infoReducer = (state = [], action) => {
             arr = [...state, action.payload]
             return arr
         case 'REMOVE_INFO':
-            state.splice(action.payload, 1)
-            arr = [...state]
+            let n = 0
+            state.map((item, index) => {
+                if (item.id == action.payload) {
+                    n = index
+                }
+            })
+            arr = [...state.slice(0, n), ...state.slice(n + 1, state.length)]
             return arr
         case 'INITIATE_INFO':
             return action.payload

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Select from 'react-dropdown-select'
 import DatePicker from 'react-datepicker'
@@ -61,17 +61,13 @@ const InfoSubmit = () => {
     const [lastname, setLastname] = useState('')
     const [birthday, setBirthday] = useState(new Date())
     const [nationality, setNationality] = useState('')
-    const [id, setId] = useState('')
+    const [cid, setCid] = useState('')
     const [gender, setGender] = useState('')
     const [phone, setPhone] = useState()
     const [passport, setPassport] = useState('')
     const [salary, setSalary] = useState()
 
     const dispatch = useDispatch()
-
-    useEffect(() => {
-
-    }, [])
 
     const onGenderChange = (e) => {
         setGender(e.target.value)
@@ -83,23 +79,33 @@ const InfoSubmit = () => {
         setLastname('')
         setBirthday(new Date())
         setNationality('')
-        setId('')
+        setCid('')
         setGender('')
         setPhone()
-        setPassport()
-        setSalary()
+        setPassport('')
+        setSalary(0)
     }
 
     const onSubmit = () => {
         let data = localStorage.getItem('data')
+        let id = localStorage.getItem('id')
+
+        if (id) {
+            localStorage.setItem('id', parseInt(id) + 1)
+            id = localStorage.getItem('id')
+        } else {
+            localStorage.setItem('id', 0)
+            id = localStorage.getItem('id')
+        }
 
         const personObj = {
+            id: id,
             title: title,
             firstname: firstname,
             lastname: lastname,
             birthday: birthday,
             nationality: nationality,
-            id: id,
+            cid: cid,
             gender: gender,
             phone: phone,
             passport: passport,
@@ -150,7 +156,7 @@ const InfoSubmit = () => {
                 <Row>
                     <Group>
                         <Text>CitizenID</Text>
-                        <Input type='text' maxLength='13' value={id} onChange={e => { setId(e.target.value) }} />
+                        <Input type='text' maxLength='13' value={cid} onChange={e => { setCid(e.target.value) }} />
                     </Group>
                 </Row>
                 <Row style={{ width: '86%' }}>

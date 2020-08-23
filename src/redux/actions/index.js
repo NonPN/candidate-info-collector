@@ -18,3 +18,9 @@ export const initiateInfo = (info) => {
         payload: info
     }
 }
+
+export const selectAll = () => {
+    return {
+        type: 'CLICKED'
+    }
+}
