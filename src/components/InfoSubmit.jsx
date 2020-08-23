@@ -3,6 +3,8 @@ import styled from 'styled-components';
 import Select from 'react-dropdown-select'
 import DatePicker from 'react-datepicker'
 import PhoneInput from 'react-phone-input-2'
+import { useDispatch } from 'react-redux'
+import { addInfo } from '../redux/actions'
 
 import "react-datepicker/dist/react-datepicker.css";
 import 'react-phone-input-2/lib/style.css'
@@ -42,6 +44,11 @@ const Input = styled.input`
     margin: 10px;
     padding: 5px;
 `
+const Btn = styled.button`
+    width: 98%;
+    height: 30px;
+`
+
 const titleOptions = [
     { label: 'Mr.', value: 'Mr.' },
     { label: 'Mrs.', value: 'Mrs.' },
@@ -54,11 +61,13 @@ const InfoSubmit = () => {
     const [lastname, setLastname] = useState('')
     const [birthday, setBirthday] = useState(new Date())
     const [nationality, setNationality] = useState('')
-    const [id, setId] = useState()
+    const [id, setId] = useState('')
     const [gender, setGender] = useState('')
     const [phone, setPhone] = useState()
-    const [passport, setPassport] = useState()
+    const [passport, setPassport] = useState('')
     const [salary, setSalary] = useState()
+
+    const dispatch = useDispatch()
 
     useEffect(() => {
 
@@ -68,7 +77,22 @@ const InfoSubmit = () => {
         setGender(e.target.value)
     }
 
+    const resetInfo = () => {
+        setTitle('')
+        setFirstname('')
+        setLastname('')
+        setBirthday(new Date())
+        setNationality('')
+        setId('')
+        setGender('')
+        setPhone()
+        setPassport()
+        setSalary()
+    }
+
     const onSubmit = () => {
+        let data = localStorage.getItem('data')
+
         const personObj = {
             title: title,
             firstname: firstname,
@@ -81,6 +105,19 @@ const InfoSubmit = () => {
             passport: passport,
             salary: salary
         }
+
+        if (data) {
+            let jdata = JSON.parse(data)
+            jdata.value.push(personObj)
+            localStorage.setItem('data', JSON.stringify(jdata))
+            dispatch(addInfo(personObj))
+        } else {
+            let arr = [personObj]
+            localStorage.setItem('data', JSON.stringify({ value: arr }))
+            dispatch(addInfo(personObj))
+        }
+
+        resetInfo()
     }
 
     return (
@@ -93,11 +130,11 @@ const InfoSubmit = () => {
                     </Group>
                     <Group>
                         <Text>Firstname</Text>
-                        <Input onChange={e => { setFirstname(e.target.value); }} />
+                        <Input value={firstname} onChange={e => { setFirstname(e.target.value); }} />
                     </Group>
                     <Group>
                         <Text>Lastname</Text>
-                        <Input onChange={e => { setLastname(e.target.value) }} />
+                        <Input value={lastname} onChange={e => { setLastname(e.target.value) }} />
                     </Group>
                 </Row>
                 <Row style={{ width: '83%' }}>
@@ -113,36 +150,39 @@ const InfoSubmit = () => {
                 <Row>
                     <Group>
                         <Text>CitizenID</Text>
-                        <Input type='text' maxLength='1' />
+                        <Input type='text' maxLength='13' value={id} onChange={e => { setId(e.target.value) }} />
                     </Group>
                 </Row>
                 <Row style={{ width: '86%' }}>
                     <Group>
                         <Text>Gender</Text>
                         <div onChange={onGenderChange}>
-                            <Input type='radio' id='m' value='male' checked={gender == 'male'}></Input>
+                            <Input type='radio' id='m' value='male' checked={gender === 'male'}></Input>
                             <label for='m'>male</label>
-                            <Input type='radio' id='f' value='female' checked={gender == 'female'}></Input>
+                            <Input type='radio' id='f' value='female' checked={gender === 'female'}></Input>
                             <label for='f'>female</label>
-                            <Input type='radio' id='u' value='unisex' checked={gender == 'unisex'}></Input>
+                            <Input type='radio' id='u' value='unisex' checked={gender === 'unisex'}></Input>
                             <label for='u'>unisex</label>
                         </div>
                     </Group>
                     <Group>
                         <Text>Phone no.</Text>
-                        <div><PhoneInput style={{ margin: '10px' }} value={phone} onChange={phone => { setPhone(phone) }} /></div>
+                        <div><PhoneInput style={{ margin: '10px' }} value={phone} onChange={phone => { setPhone('+' + phone) }} /></div>
                     </Group>
                 </Row>
                 <Row style={{ width: '86%' }}>
                     <Group>
                         <Text>Passport no.</Text>
-                        <Input type='text' onChange={e => { setPassport(e.target.value) }}></Input>
+                        <Input type='text' value={passport} onChange={e => { setPassport(e.target.value) }}></Input>
                     </Group>
                     <Group>
                         <Text>Expected salary</Text>
-                        <Input type='number' onChange={e => { setSalary(e.target.value); }}></Input>
+                        <Input type='number' value={salary} onChange={e => { setSalary(e.target.value); }}></Input>
                         <div>THB.</div>
                     </Group>
+                </Row>
+                <Row style={{ justifyContent: 'center', marginTop: '30px' }}>
+                    <Btn onClick={onSubmit}><b>Submit</b></Btn>
                 </Row>
             </Body>
         </Container>
